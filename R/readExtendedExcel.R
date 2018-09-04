@@ -29,4 +29,6 @@ readExtendedExcel <- function(datfiles) {
 
     }
   }
+  return(alldat)
+
 }
