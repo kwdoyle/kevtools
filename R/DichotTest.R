@@ -76,7 +76,7 @@ DichotTest <- function(data, group_var, tst_vars, GCS_compare=7, check_n_percent
 
     # N(%s)s
     if (check_n_percents == TRUE) {
-      n_pcnt <- MakeCountTables2(newdata, group_var1="MRN", group_var2=group_var, sum_vars=new_col4)
+      n_pcnt <- MakeCountTablesGroup(newdata, id_var="MRN", group_var=group_var, sum_vars=new_col4)
 
       tst_out[[var]] <- list(rawdat=newdata, tbl=tbl, res=res, compare_val=compare_val, n_percent=n_pcnt[[new_col4]])
 
