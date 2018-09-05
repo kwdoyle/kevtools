@@ -4,17 +4,21 @@
 \alias{DichotTest}
 \title{Test for differences in dichotomized numeric variables}
 \usage{
-DichotTest(data, group_var, tst_vars, GCS_compare = 7,
-  check_n_percents = FALSE)
+DichotTest(data, id_var = NULL, group_var, tst_vars, GCS_compare = 7,
+  rep_meas_sum_func = "median", check_n_percents = FALSE)
 }
 \arguments{
 \item{data}{the input data frame}
+
+\item{id_var}{The identifying variable per observation (e.g., patient number). Defaults to NULL}
 
 \item{group_var}{the variable to group by}
 
 \item{tst_vars}{a vector of variables to dichotomize by their median and test}
 
 \item{GCS_compare}{if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7}
+
+\item{rep_meas_sum_func}{If wind up having multiple observations per id_var, this is the function to summarise the tst_vars per id_var by. Defaults to "median"}
 
 \item{check_n_percents}{set to TRUE if wish to also obtain a count table with percentages. Defaults to FALSE.}
 }
@@ -23,7 +27,14 @@ Dichotomize a variable by > or <= the median value and then perform Fisher's exa
 This function was formally named OrdinalVarTest.
 }
 \examples{
-out <- DichotTest(data=df, group_var="Included_in_Study", tst_vars=c("Admission_GCS", "Age", "ICU_Stay_Len"), check_n_percents=TRUE)
+# if have multiple observations per MRN, then can take the median per patient with rep_meas_sum_func="median"
+# before doing stats.
+out <- DichotTest(data=df, id_var="MRN", group_var="Included_in_Study", tst_vars=c("Admission_GCS", "Age", "ICU_Stay_Len"),
+rep_meas_sum_func="median", check_n_percents=TRUE)
 # see n(\%) tables
 out$Age$n_percent
+# see contingency table (basically has same counts from n_percent but without the percent)
+out$Age$tbl
+# this table is used for the fisher test
+out$Age$res
 }
