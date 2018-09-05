@@ -4,12 +4,14 @@
 \alias{MakeCountTables}
 \title{Get counts and percentages from a table}
 \usage{
-MakeCountTables(data, id_var, sum_vars)
+MakeCountTables(data, id_var = NULL, group_var = NULL, sum_vars)
 }
 \arguments{
 \item{data}{the input table}
 
 \item{id_var}{the row-identifier column}
+
+\item{group_var}{the parameter to group the counts and percentages by}
 
 \item{sum_vars}{a vector of variables from the table to perform the operation on}
 }
@@ -18,6 +20,13 @@ Takes an input table and calculates the total and percentages for each variable.
 In order to ensure one row per observation, a id_var parameter is required.
 }
 \examples{
+## Note: must provide either an id_var or a group_var.
+
+# N(\%)s with a grouping variable
+out <- MakeCountTables(data, id_var="MRN", group_var="Included_in_Study", sum_vars=c("Etiology", "Race", "Gender"))
+print(out$Etiology)
+
+# N(\%s) without a grouping variable
 out <- MakeCountTables(data, id_var="MRN", sum_vars=c("Etiology", "Race", "Gender"))
 print(out$Etiology)
 }

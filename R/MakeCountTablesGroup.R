@@ -1,5 +1,6 @@
 #' Get counts and percentages from a table split by a grouping parameter
 #'
+#' !!! This function has been depreciated -- just use MakeCountTables instead
 #' Takes an input table and calculates the total and percentages for each variable per group
 #' In order to ensure one row per observation, a id_var parameter is required as id_var
 #' @param data the input table
@@ -13,6 +14,8 @@
 
 MakeCountTablesGroup <- function(data, id_var="MRN", group_var="CMD", sum_vars) {
   library(dplyr)
+
+  warning("This function is depreciated. Use MakeCountTables() instead.")
 
   out_lst <- list()
   for (nm in sum_vars) {

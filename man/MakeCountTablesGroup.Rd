@@ -16,6 +16,7 @@ MakeCountTablesGroup(data, id_var = "MRN", group_var = "CMD", sum_vars)
 \item{sum_vars}{a vector of variables from the table to perform the operation on}
 }
 \description{
+!!! This function has been depreciated -- just use MakeCountTables instead
 Takes an input table and calculates the total and percentages for each variable per group
 In order to ensure one row per observation, a id_var parameter is required as id_var
 }

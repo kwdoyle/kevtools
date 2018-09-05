@@ -25,6 +25,10 @@
 DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, rep_meas_sum_func="median", check_n_percents=FALSE) {
   tst_out <- list()
 
+  if (check_n_percents==TRUE & is.null(id_var)) {
+    stop("If calculating n_percents, then need to specify an id_var")
+  }
+
   # initialize data
   if (is.null(id_var)) {
     pickcols <- as.list(c(group_var, tst_vars))
@@ -107,7 +111,7 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, re
     # N(%s)s
     if (check_n_percents == TRUE) {
       # uses the new column name saved as new_col4 as the new summary variable to use in MakeCountTablesGroup.
-      n_pcnt <- MakeCountTablesGroup(newdata, id_var=id_var, group_var=group_var, sum_vars=new_col4)
+      n_pcnt <- MakeCountTables(newdata, id_var=id_var, group_var=group_var, sum_vars=new_col4)
 
       tst_out[[var]] <- list(rawdat=newdata, tbl=tbl, res=res, compare_val=compare_val, n_percent=n_pcnt[[new_col4]])
 
