@@ -4,7 +4,8 @@
 \alias{UnivariateRegress}
 \title{Perform a univariate regression analysis}
 \usage{
-UnivariateRegress(table, depen_vars, indep_vars)
+UnivariateRegress(table, depen_vars, indep_vars, mod_type = "glm",
+  rand_effect = NULL)
 }
 \arguments{
 \item{table}{the input data}
@@ -12,6 +13,10 @@ UnivariateRegress(table, depen_vars, indep_vars)
 \item{depen_vars}{the dependent variables}
 
 \item{indep_vars}{the independent variables}
+
+\item{mod_type}{Type of model to run. Must either be "glm" or "glmer"}
+
+\item{rand_effect}{If mod_type is "glmer", pass whichever variable you want as the random effect as a string. Defaults to NULL.}
 }
 \description{
 Will perform a logistic regression for each independent vatiable in the input table and output the results
