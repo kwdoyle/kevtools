@@ -68,10 +68,10 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, re
     # other functions to run after the above.
     # If var == Admission_GCS, then split values where > 7
     if (var == "Admission_GCS") {
-      func_name4 <- paste0("if_else(", var, ">", GCS_compare, ", true=1, false=0)")
+      func_name4 <- paste0("if_else(", var, ">=", GCS_compare, ", true=1, false=0)")
 
     } else {
-      func_name4 <- paste0("if_else(", var, ">", new_col1, ", true=1, false=0)")
+      func_name4 <- paste0("if_else(", var, ">=", new_col1, ", true=1, false=0)")
     }
 
     new_col4 <- paste0("dichot_", var)
