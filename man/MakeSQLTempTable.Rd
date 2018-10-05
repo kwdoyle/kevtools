@@ -11,11 +11,11 @@ MakeSQLTempTable(chan, data, tbl_name, columns, dtypes)
 
 \item{data}{the data frame to copy to SQL}
 
-\item{tbl_name}{the desired temporary table name, without the pound sign}
+\item{tbl_name}{the desired temporary table name, without the pound sign passed as a string}
 
-\item{columns}{the columns from data wished to be copied}
+\item{columns}{the columns from data wished to be copied. To be passed as a vector of strings.}
 
-\item{dtypes}{the data types of those columns}
+\item{dtypes}{the data types of those columns. Also to be passed as a vector of strings.}
 }
 \description{
 Copy an R data frame into Microsoft SQL Server as a temporary table which can then be used to query other SQL tables

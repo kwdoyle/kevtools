@@ -8,6 +8,6 @@
 #' newdat <- BetterDropNA(dat, checkCols=c("column1", "column3"))
 
 BetterDropNA <- function(dat, checkCols) {
-  out <- dat[rowSums(is.na(dat[,checkCols])) != ncol(dat[,checkCols]), ]
+  out <- dat[rowSums(is.na(dat[,checkCols, drop = FALSE])) != ncol(dat[,checkCols]), ]
   return(out)
 }
