@@ -4,14 +4,17 @@
 \alias{QualitativeStatistics}
 \title{Compare qualitative variables between a grouping variable}
 \usage{
-QualitativeStatistics(data, group_var, tst_vars, multilevel = TRUE)
+QualitativeStatistics(data, id_var, group_var, tst_vars,
+  multilevel = FALSE)
 }
 \arguments{
 \item{data}{the input data frame}
 
-\item{group_var}{the grouping variable}
+\item{id_var}{the id variable to group obsetrvations by}
 
-\item{tst_vars}{variables to perform the test on}
+\item{group_var}{the grouping variable, passed as a string}
+
+\item{tst_vars}{variables to perform the test on; can be passed as a vector of strings}
 
 \item{multilevel}{if TRUE, then function will perform analyses on all values with a variable between the group}
 }
@@ -20,7 +23,7 @@ Make contingency table of counts per group and, if the table is 2x2, perform Fis
 Can perform tests counts of each value within a variable as well if multilevel is set to TRUE.
 }
 \examples{
-out <- QualitativeStatistics(data, group_var="CMD", tst_vars=c("Gender", "Etiology", "Race"), multilevel=TRUE)
+out <- QualitativeStatistics(data, group_var = "CMD", tst_vars = c("Gender", "Etiology", "Race"), multilevel = TRUE)
 # since multilevel is TRUE, will have results for male and female, all etiologies, and all races.
 print(out$Etiology$SAH)
 print(out$Etiology$ICH)

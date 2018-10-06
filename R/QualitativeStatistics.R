@@ -3,6 +3,7 @@
 #' Make contingency table of counts per group and, if the table is 2x2, perform Fisher's exact test. If not, perform a chi square test.
 #' Can perform tests counts of each value within a variable as well if multilevel is set to TRUE.
 #' @param data the input data frame
+#' @param id_var the id variable to group obsetrvations by
 #' @param group_var the grouping variable, passed as a string
 #' @param tst_vars variables to perform the test on; can be passed as a vector of strings
 #' @param multilevel if TRUE, then function will perform analyses on all values with a variable between the group
