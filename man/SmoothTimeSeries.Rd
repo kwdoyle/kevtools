@@ -4,18 +4,23 @@
 \alias{SmoothTimeSeries}
 \title{Clean a time series}
 \usage{
-SmoothTimeSeries(data, var_col, time_col, k1 = 3, k2 = 12)
+SmoothTimeSeries(data, id_col, var_col, time_col, median_mins, mean_mins,
+  n_sec_per_row = 5)
 }
 \arguments{
 \item{data}{the input data frame}
 
-\item{var_col}{name of variable to perform the smoothing on}
+\item{id_col}{name of column, passed as a string, to identify observations by, e.g., a patient identifier}
 
-\item{time_col}{the column containing the timestamps}
+\item{var_col}{name of variable to perform the smoothing on passed as a string}
 
-\item{k1}{number of rows to perform the median filtering on}
+\item{time_col}{the column containing the timestamps passed as a string}
 
-\item{k2}{number of rows to perform the mean filtering on}
+\item{median_mins}{window length of data in minutes to perform the median filtering on}
+
+\item{mean_mins}{window length of data in minutes to perform the mean filtering on}
+
+\item{n_sec_per_row}{Length of time in seconds that each row of data corresponds to. Defaults to 5 for BedMaster data.}
 }
 \description{
 Smooth out time series data using a median and then a mean filter.
@@ -28,6 +33,6 @@ tmp <- AllBP_data \%>\%
   group_by(ParTime) \%>\%
   # if multiple measurements at the same time, take the higher one.
   filter(Systolic == max(Systolic)) \%>\%
-  
-  SmoothTimeSeries(., "Systolic", "ParTime", k1 = 3, k2 = 12)
+
+  SmoothTimeSeries(., id_val = ID, var_col = "Systolic", time_col = "ParTime", median_mins = 30, mean_mins = 30)
 }
