@@ -4,15 +4,18 @@
 \alias{SmoothTimeSeries}
 \title{Clean a time series}
 \usage{
-SmoothTimeSeries(data, id_col, var_col, time_col, median_mins, mean_mins,
-  n_sec_per_row = 5)
+SmoothTimeSeries(data, id_col, param_col, var_col, time_col,
+  median_mins = NULL, mean_mins = NULL, n_sec_per_row = 5,
+  k1 = NULL, k2 = NULL)
 }
 \arguments{
 \item{data}{the input data frame}
 
 \item{id_col}{name of column, passed as a string, to identify observations by, e.g., a patient identifier}
 
-\item{var_col}{name of variable to perform the smoothing on passed as a string}
+\item{param_col}{name of column, as string, specifying names of parameters to perform smoothing for.}
+
+\item{var_col}{string name of column containing the values for the parameters specified in param_col}
 
 \item{time_col}{the column containing the timestamps passed as a string}
 
@@ -21,18 +24,23 @@ SmoothTimeSeries(data, id_col, var_col, time_col, median_mins, mean_mins,
 \item{mean_mins}{window length of data in minutes to perform the mean filtering on}
 
 \item{n_sec_per_row}{Length of time in seconds that each row of data corresponds to. Defaults to 5 for BedMaster data.}
+
+\item{k1}{number of rows to perform median filter on. Only used if the same amount of time does not pass between each row and median_mins is not specified}
+
+\item{k2}{number of rows to perform mean filter on. Only used if the same amount of time does not pass between each row and mean_mins is not specified}
 }
 \description{
-Smooth out time series data using a median and then a mean filter.
+Smooth out time series data using a median and then a mean filter over specified windows of time.
 }
 \examples{
-## Doing some pre-cleaning of an arterial blood pressure data set before
-## piping to the function
-tmp <- AllBP_data \%>\%
-  filter(ID == id) \%>\%
-  group_by(ParTime) \%>\%
-  # if multiple measurements at the same time, take the higher one.
-  filter(Systolic == max(Systolic)) \%>\%
+median_mins = 3
+mean_mins = 5
 
-  SmoothTimeSeries(., id_val = ID, var_col = "Systolic", time_col = "ParTime", median_mins = 30, mean_mins = 30)
+tstdat2 <- SmoothTimeSeries(data = tstdat,
+                            id_col = "PATIENT_ID",
+                            param_col = "ParName",
+                            var_col = "ParValue",
+                            time_col = "ParTime",
+                            median_mins = median_mins,
+                            mean_mins = mean_mins)
 }
