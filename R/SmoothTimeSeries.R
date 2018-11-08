@@ -27,7 +27,7 @@
 
 
 
-SmoothTimeSeries <- function(data, id_col, param_col, var_col, time_col,
+SmoothTimeSeries <- function(data, id_col = NULL, param_col, var_col, time_col,
                              median_mins = NULL, mean_mins = NULL, n_sec_per_row = 5,
                              k1 = NULL, k2 = NULL) {
   library(zoo)
@@ -58,7 +58,8 @@ SmoothTimeSeries <- function(data, id_col, param_col, var_col, time_col,
 
 
   out <- data %>%
-    group_by_(id_col, param_col) %>%
+    #group_by_(id_col, param_col) %>%
+  {if(!is.null(id_col)) group_by_(., id_col, param_col) else group_by_(., param_col)} %>%
     arrange_(time_col) %>%
     mutate_(.dots = func.list[1]) %>%
     fill(windowMedian, .direction = "up") %>%
