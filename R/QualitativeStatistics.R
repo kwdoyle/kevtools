@@ -29,7 +29,10 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
       sub_vars <- unique(data[, var])
 
       for (sub_var in sub_vars) {
-        func_name <- paste0("case_when(", var, " == '", sub_var, "' ~ ", var, ", TRUE ~ 'not", sub_var, "')")
+        # if the variable is a factor, then this will fail because it will try to re-assign the factor if TRUE,
+        # else assign a character ('notvar') if false.
+        # always set to check the variable as a character.
+        func_name <- paste0("case_when(as.character(", var, ") == '", sub_var, "' ~ as.character(", var, "), TRUE ~ 'not", sub_var, "')")
         new_col <- paste0("not", sub_var) # should probably name this as: paste0("new", var).
         # Eh, never mind. this unnecessarily breaks everything and it'll be a pain to fix.
 
