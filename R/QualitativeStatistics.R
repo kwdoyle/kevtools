@@ -26,7 +26,9 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
     for (var in tst_vars) {
       sub_chi_out <- list()
-      sub_vars <- unique(data[, var])
+      # I think NAs should be removed here, becase after removing them below,
+      # there will only be one value in the new column of "not 'sub_var'" which would be 'notNA'
+      sub_vars <- unique(data[!is.na(data[, var]), var])
 
       for (sub_var in sub_vars) {
         # if the variable is a factor, then this will fail because it will try to re-assign the factor if TRUE,

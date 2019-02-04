@@ -46,7 +46,10 @@ MakeCountTables <- function(data, id_var=NULL, group_var=NULL, sum_vars) {
       distinct() %>%
       # if an id_var is specified, then group by it before calculating the total n
       {if(!is.null(group_var)) group_by_(., group_var) else .} %>%
-      mutate(total = n()) %>%
+      # I think this should be the number of unique id_vars if id_var isn't null?
+      {if(!is.null(id_var)) mutate_(.data = ., .dots = list(total = paste0("length(unique(",paste0(id_var),"))"))) else mutate_(.data = ., .dots = list(total = "n()"))} %>%
+      #{if(is.null(id_var)) mutate_(.data = ., "total = 'n()'") else .}
+      #mutate(total = n()) %>%  
       {if(!is.null(group_var)) group_by_(., group_var, nm) else group_by_(., nm)} %>%
       #group_by_(nm) %>%
       mutate(N = n(),
