@@ -17,12 +17,14 @@ QuantitativeDemographics <- function(data, id_var, sum_vars) {
     out <- data %>%
       ungroup() %>%
       select_(.dots=c(id_var, nm)) %>%
+      # need to remove rows with NAs in nm
+      filter_(paste0("!is.na(", nm, ")")) %>%
       distinct()
 
     # check to make sure the number of rows in this table
     # is equal to the number of unique values of the id_var.
     # otherwise this would mean there are duplicate values/
-    # one patient has multiple values
+    # one id_var has multiple values
     if (nrow(out) != length(unique(pull(out, id_var)))) {
       warning(paste("Duplicate values found per", id_var, "for", nm), noBreaks.=TRUE)
     }
