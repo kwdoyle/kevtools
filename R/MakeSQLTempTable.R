@@ -68,7 +68,7 @@ MakeSQLTempTable <- function(chan, data, tbl_name, columns, dtypes) {
 
     } else{
 
-      tmp_dat <- data[ranges[i]:(ranges[i]+adtl_val-1), ]
+      tmp_dat <- data[ranges[i]:(ranges[i]+adtl_val-1), , drop = FALSE]  # need drop = FALSE here too
       tmp_dat[, columns] <- lapply(tmp_dat[, columns, drop = FALSE], shQuote, type="csh")
 
       rows <- apply(tmp_dat[, columns, drop = FALSE], 1, paste, collapse=",")
