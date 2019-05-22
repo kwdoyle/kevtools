@@ -68,7 +68,8 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           chi_res <- chisq.test(tabl)
         }
 
-        sub_chi_out[[sub_var]] <- list(tbl = tabl, res = chi_res)
+        # make sure the name of the new list element is a character. using numbers can cause problems
+        sub_chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = chi_res)
 
         chi_out[[var]] <- sub_chi_out
 
