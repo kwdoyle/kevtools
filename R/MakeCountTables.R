@@ -18,7 +18,7 @@
 #' out <- MakeCountTables(data, id_var="MRN", sum_vars=c("Etiology", "Race", "Gender"))
 #' print(out$Etiology)
 
-MakeCountTables <- function(data, id_var=NULL, group_var=NULL, sum_vars) {
+MakeCountTables <- function(data, id_var=NULL, group_var=NULL, rm_na=FALSE, sum_vars) {
   library(dplyr)
 
   if (is.null(id_var) & is.null(group_var)) {
@@ -37,6 +37,10 @@ MakeCountTables <- function(data, id_var=NULL, group_var=NULL, sum_vars) {
       endpickcols <- as.list(c(nm, "N", "pcnt"))
     } else {
       endpickcols <- as.list(c(nm, group_var, "total", "N", "pcnt"))
+    }
+
+    if (rm_na) {
+      data <- data[!is.na(data[, nm]), ]
     }
 
     out <- data %>%
