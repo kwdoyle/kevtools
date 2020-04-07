@@ -4,7 +4,8 @@
 \alias{MakeCountTables}
 \title{Get counts and percentages from a table}
 \usage{
-MakeCountTables(data, id_var = NULL, group_var = NULL, sum_vars)
+MakeCountTables(data, id_var = NULL, group_var = NULL, rm_na = FALSE,
+  sum_vars)
 }
 \arguments{
 \item{data}{the input table}

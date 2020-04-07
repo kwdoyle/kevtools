@@ -15,5 +15,5 @@ BetterDropNA(dat, checkCols)
 pretty self-explanatory
 }
 \examples{
-# newdat <- BetterDropNA(dat, checkCols=c("column1", "column3"))
+newdat <- BetterDropNA(dat, checkCols=c("column1", "column3"))
 }
