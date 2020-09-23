@@ -32,7 +32,7 @@ QuantitativeDemographicsGroup <- function(data, id_var="MRN", group_var="CMD", s
     out <- out %>%
       # need to remove any instances of Inf or -Inf caused from calculating hospital/ICU stay lengths when some are missing
       filter_(paste0("is.finite(", nm, ")")) %>%
-      group_by_(group_var) %>%
+      group_by_at(., vars(one_of(group_var))) %>%
       summarise_(avg = paste("mean(", nm, ", na.rm=T)", sep=""),
                  sd = paste("sd(", nm, ", na.rm=T)", sep=""),
                  med = paste("median(", nm, ", na.rm=T)", sep=""),
