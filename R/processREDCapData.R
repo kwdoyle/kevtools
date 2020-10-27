@@ -8,8 +8,9 @@
 #' newdat <- processREDcapData(data=rawredcap, redcap_blank='')
 
 processREDCapData <- function(data, redcap_blank='') {
+  library(dplyr)
   # convert redcap blanks to nas
-  data <- dplyr::mutate_all(data, list(~na_if(., redcap_blank)))
+  data <- dplyr::mutate_all(data, list(~dplyr::na_if(., redcap_blank)))
   # get names of all repeated instruments, separate them all from the non-repeated instruments,
   # then join them. this way the data should be in the repeated format and any NAs per row should be gone
   rep_insts <- unique(data$redcap_repeat_instrument)
