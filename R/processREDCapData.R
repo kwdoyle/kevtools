@@ -33,7 +33,11 @@ processREDCapData <- function(data, redcap_blank='') {
     inst_dat <- Filter(function(x) !all(is.na(x)), inst_dat_raw)
     # after I merge for the next rep inst, there should be 4 rows for record id 1
     # and there are. nice.
-    maindat <- merge(maindat, inst_dat, by = 'record_id', all.x = TRUE)
+    # update: when using a redcap database with events/trials/data access groups/etc,
+    # those columns will exist in both maindat and inst_dat, so need to join on those too
+    # ie, all matching column names
+    names_to_merge_on <- unique(names(maindat))[which(unique(names(maindat)) %in% unique(names(inst_dat)))]
+    maindat <- merge(maindat, inst_dat, by = names_to_merge_on, all.x = TRUE)
   }
 
   return(maindat)
