@@ -89,6 +89,10 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
       func_name <- paste0("max(", var, ", na.rm=T)")
       new_col <- var #paste0("max_", var) # just rename it the same as the original
 
+      # convert column to character before continuing, else that 'selecting
+      # max to remove duplicates' breaks.
+      data[,var] <- as.character(data[,var])
+
       datuse <- data %>%
         ungroup() %>%
         select_(.dots = c(id_var, group_var, var)) %>%
