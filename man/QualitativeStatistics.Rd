@@ -4,8 +4,15 @@
 \alias{QualitativeStatistics}
 \title{Compare qualitative variables between a grouping variable}
 \usage{
-QualitativeStatistics(data, id_var, group_var, tst_vars,
-  multilevel = FALSE)
+QualitativeStatistics(
+  data,
+  id_var,
+  group_var,
+  tst_vars,
+  multilevel = FALSE,
+  test_use = "proportion",
+  correct_var = NULL
+)
 }
 \arguments{
 \item{data}{the input data frame}
@@ -17,6 +24,10 @@ QualitativeStatistics(data, id_var, group_var, tst_vars,
 \item{tst_vars}{variables to perform the test on; can be passed as a vector of strings}
 
 \item{multilevel}{if TRUE, then function will perform analyses on all values with a variable between the group}
+
+\item{test_use}{specify either 'proportion' or 'logistic_regress' Note: logistic regression is only done if multilevel == TRUE}
+
+\item{correct_var}{if performing a logistic regression, can specify an additional variable to correct for}
 }
 \description{
 Make contingency table of counts per group and, if the table is 2x2, perform Fisher's exact test. If not, perform a chi square test.

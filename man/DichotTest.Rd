@@ -4,8 +4,17 @@
 \alias{DichotTest}
 \title{Test for differences in dichotomized numeric variables}
 \usage{
-DichotTest(data, id_var = NULL, group_var, tst_vars, GCS_compare = 7,
-  rep_meas_sum_func = "median", check_n_percents = FALSE)
+DichotTest(
+  data,
+  id_var = NULL,
+  group_var,
+  tst_vars,
+  GCS_compare = 7,
+  rep_meas_sum_func = "median",
+  check_n_percents = FALSE,
+  test_use = "fisher",
+  correct_var = NULL
+)
 }
 \arguments{
 \item{data}{the input data frame}
@@ -21,6 +30,10 @@ DichotTest(data, id_var = NULL, group_var, tst_vars, GCS_compare = 7,
 \item{rep_meas_sum_func}{If wind up having multiple observations per id_var, this is the function to summarise the tst_vars per id_var by. Defaults to "median"}
 
 \item{check_n_percents}{set to TRUE if wish to also obtain a count table with percentages. Defaults to FALSE.}
+
+\item{test_use}{specify either 'fisher' or 'logistic_regress'}
+
+\item{correct_var}{if performing a logistic regression, can specify an additional variable to correct for}
 }
 \description{
 Dichotomize a variable by > or <= the median value and then perform Fisher's exact test on the resulting contingency table between a grouping variable.

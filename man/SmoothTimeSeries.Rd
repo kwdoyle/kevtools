@@ -4,9 +4,18 @@
 \alias{SmoothTimeSeries}
 \title{Clean a time series}
 \usage{
-SmoothTimeSeries(data, id_col = NULL, param_col, var_col, time_col,
-  median_mins = NULL, mean_mins = NULL, n_sec_per_row = 5,
-  k1 = NULL, k2 = NULL)
+SmoothTimeSeries(
+  data,
+  id_col = NULL,
+  param_col,
+  var_col,
+  time_col,
+  median_mins = NULL,
+  mean_mins = NULL,
+  n_sec_per_row = 5,
+  k1 = NULL,
+  k2 = NULL
+)
 }
 \arguments{
 \item{data}{the input data frame}

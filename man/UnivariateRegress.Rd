@@ -4,8 +4,13 @@
 \alias{UnivariateRegress}
 \title{Perform a univariate regression analysis}
 \usage{
-UnivariateRegress(table, depen_vars, indep_vars, mod_type = "glm",
-  rand_effect = NULL)
+UnivariateRegress(
+  table,
+  depen_vars,
+  indep_vars,
+  mod_type = "glm",
+  rand_effect = NULL
+)
 }
 \arguments{
 \item{table}{the input data}

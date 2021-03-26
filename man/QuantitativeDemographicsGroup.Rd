@@ -4,8 +4,12 @@
 \alias{QuantitativeDemographicsGroup}
 \title{Summary statistics on quantitative variables per group}
 \usage{
-QuantitativeDemographicsGroup(data, id_var = "MRN", group_var = "CMD",
-  sum_vars)
+QuantitativeDemographicsGroup(
+  data,
+  id_var = "MRN",
+  group_var = "CMD",
+  sum_vars
+)
 }
 \arguments{
 \item{data}{the input data}

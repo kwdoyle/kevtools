@@ -4,8 +4,7 @@
 \alias{PermutationTest}
 \title{Run a permutation test}
 \usage{
-PermutationTest(group1dat, group2dat, num_permutations,
-  test_type = "mean")
+PermutationTest(group1dat, group2dat, num_permutations, test_type = "mean")
 }
 \arguments{
 \item{group1dat}{data from group 1}
