@@ -7,6 +7,8 @@
 #' @param group_var the grouping variable, passed as a string
 #' @param tst_vars variables to perform the test on; can be passed as a vector of strings
 #' @param multilevel if TRUE, then function will perform analyses on all values with a variable between the group
+#' @param test_use specify either 'proportion' or 'logistic_regress' Note: logistic regression is only done if multilevel == TRUE
+#' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
 #' @export
 #' @examples
 #' out <- QualitativeStatistics(data, group_var = "CMD", tst_vars = c("Gender", "Etiology", "Race"), multilevel = TRUE)
@@ -16,7 +18,8 @@
 #' print(out$Gender$M)
 #' print(out$Gender$F)
 
-QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE) {
+QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE,
+                                  test_use='proportion', correct_var=NULL) {
   library(dplyr)
   chi_out <- list()
   # make sure data is not a tibble so that some of the below opperations work
@@ -40,7 +43,7 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
         datuse <- data %>%
           ungroup() %>%
-          select_(.dots = c(id_var, group_var, var)) %>%
+          select_(.dots = c(id_var, group_var, var, correct_var)) %>%
           distinct() %>%
           # remove any rows where the var of interest is missing
           # to prevent xtabs from making a new column for missing values
@@ -52,24 +55,46 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           mutate_(.dots = setNames(func_name, new_col))
 
         # I think the new column needs to be turned into a factor and always have the 'notX' level first
-        datuse[, new_col] <- factor(datuse[, new_col], levels = c(new_col, sub_var))
+        datuse[, new_col] <- factor(datuse[, new_col], levels = c(new_col, as.character(sub_var)))
         # ..or maybe using xtabs fixes this now? idk, it all currently works. no need to change anything..
 
         #tabl <- table(datuse[,group_var], datuse[,new_col]) #datuse[,var])
         # try making a table with xtabs instead so I keep the names of each column/row
         # have to include the new_col name in ticks `` in case the name is weird and has slashes and minuses in it.
-        form <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
+        if (test_use == 'proportion') {
+          form <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
 
-        tabl <- xtabs(form, data = datuse)
-        # do a fisher test if the table is 2x2
-        if (all(dim(tabl) == c(2,2))) {
-          chi_res <- fisher.test(tabl)
-        } else {
-          chi_res <- chisq.test(tabl)
+          tabl <- xtabs(form, data = datuse)
+          # do a fisher test if the table is 2x2
+          if (all(dim(tabl) == c(2,2))) {
+            res <- fisher.test(tabl)
+          } else {
+            res <- chisq.test(tabl)
+          }
+
+        } else if (test_use == 'logistic_regress') {
+          if (is.null(correct_var)) {
+            # TODO: NOTE: This is set to PREDICT each variable USING
+            # the group var. We probably are going to want to flip this for later projects.
+            # ALSO for this, need to make "variable/NOT-variable" as one column, not two.
+            # Avoid non-standard-eval dplyr stuff by just editing the second-to-last column.
+            # datuse[,ncol(datuse)-1] <- as.factor(ifelse(!is.na(datuse[,ncol(datuse)]),
+            #                                             yes=as.character(datuse[,ncol(datuse)]),
+            #                                             no=as.character(datuse[,ncol(datuse)-1])))
+            # wait, the 'new column' is already supposed to be in this format.
+
+            form <- as.formula(paste0(new_col, "~", group_var))
+          } else {
+            form <- as.formula(paste0(new_col, "~", group_var, "+", correct_var))
+          }
+
+          res <- glm(form, family='binomial', data=datuse)
+
         }
 
+
         # make sure the name of the new list element is a character. using numbers can cause problems
-        sub_chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = chi_res)
+        sub_chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = res)
 
         chi_out[[var]] <- sub_chi_out
 
@@ -116,12 +141,12 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
       tabl <- xtabs(form, data = datuse)
       # do a fisher test if the table is 2x2
       if (all(dim(tabl) == c(2, 2))) {
-        chi_res <- fisher.test(tabl)
+        res <- fisher.test(tabl)
       } else {
-        chi_res <- chisq.test(tabl)
+        res <- chisq.test(tabl)
       }
 
-      chi_out[[var]] <- list(tbl = tabl, res = chi_res)
+      chi_out[[var]] <- list(tbl = tabl, res = res)
 
     }
 

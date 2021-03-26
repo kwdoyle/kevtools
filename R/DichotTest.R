@@ -9,6 +9,8 @@
 #' @param GCS_compare if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7
 #' @param rep_meas_sum_func If wind up having multiple observations per id_var, this is the function to summarise the tst_vars per id_var by. Defaults to "median"
 #' @param check_n_percents set to TRUE if wish to also obtain a count table with percentages. Defaults to FALSE.
+#' @param test_use specify either 'fisher' or 'logistic_regress'
+#' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
 #' @export
 #' @examples
 #' # if have multiple observations per MRN, then can take the median per patient with rep_meas_sum_func="median"
@@ -22,7 +24,9 @@
 #' # this table is used for the fisher test
 #' out$Age$res
 
-DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, rep_meas_sum_func="median", check_n_percents=FALSE) {
+DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
+                       rep_meas_sum_func="median", check_n_percents=FALSE,
+                       test_use='fisher', correct_var=NULL) {
   tst_out <- list()
 
   if (check_n_percents==TRUE & is.null(id_var)) {
@@ -31,12 +35,12 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, re
 
   # initialize data
   if (is.null(id_var)) {
-    pickcols <- as.list(c(group_var, tst_vars))
+    pickcols <- as.list(c(group_var, tst_vars, correct_var))
     warning("No id variable specified -- assuming one row per observation in the input data after selecting the tst_vars")
   } else {
     # you can apparently include a NULL value in the vector inside of as.list and it will just ignore it,
     # but I'll keep the assigning as two separate things with and without id_var just in case...
-    pickcols <- as.list(c(id_var, group_var, tst_vars))
+    pickcols <- as.list(c(id_var, group_var, tst_vars, correct_var))
   }
 
   usedat <- data %>%
@@ -93,12 +97,31 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, re
       # THIS DOES WORK
       mutate_(.dots=list_of_func)  # I don't think I even need the IQR at this step.
 
-    # can use xtabs to make the contingency table
-    form <- as.formula(paste0("~", group_var, "+", new_col4))
 
-    tbl <- xtabs(form, data=newdata)
-    # then do fisher test
-    res <- fisher.test(tbl)
+    # Allow for logistic regression or fisher
+    if (test_use == 'fisher') {
+      # can use xtabs to make the contingency table
+      form <- as.formula(paste0("~", group_var, "+", new_col4))
+
+      tbl <- xtabs(form, data=newdata)
+      # then do fisher test
+      res <- fisher.test(tbl)
+
+    } else if (test_use == 'logistic_regress') {
+      if (is.null(correct_var)) {
+        # TODO: NOTE: This is set to PREDICT each variable USING
+        # the group var. We probably are going to want to flip this for later projects.
+        form <- as.formula(paste0(new_col4, "~", group_var))
+      } else {
+        form <- as.formula(paste0(new_col4, "~", group_var, "+", correct_var))
+      }
+
+      res <- glm(form, family='binomial', data=newdata)
+
+    } else {
+      stop("'test_use' must either be 'fisher' or 'logistic_regress")
+    }
+
 
     # compare value
     if (var == "Admission_GCS") {
