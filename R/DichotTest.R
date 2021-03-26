@@ -104,7 +104,7 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7, re
     if (var == "Admission_GCS") {
       compare_val <- GCS_compare
     } else {
-      compare_val <- unique(pull(newdata[,new_col1]))
+      compare_val <- unique(newdata[,new_col1])  # unique(pull(newdata[,new_col1]))
     }
 
 
