@@ -108,6 +108,7 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
       res <- fisher.test(tbl)
 
     } else if (test_use == 'logistic_regress') {
+      tbl <- NULL
       if (is.null(correct_var)) {
         # TODO: NOTE: This is set to PREDICT each variable USING
         # the group var. We probably are going to want to flip this for later projects.

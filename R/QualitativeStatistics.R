@@ -73,6 +73,7 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           }
 
         } else if (test_use == 'logistic_regress') {
+          tabl <- NULL
           if (is.null(correct_var)) {
             # TODO: NOTE: This is set to PREDICT each variable USING
             # the group var. We probably are going to want to flip this for later projects.
