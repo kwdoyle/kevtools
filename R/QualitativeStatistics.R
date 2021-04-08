@@ -137,14 +137,36 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
       #tabl <- table(datuse[,group_var], datuse[,new_col]) #datuse[,var])
       # try making a table with xtabs instead so I keep the names of each column/row
-      form <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
+      if (test_use == 'proportion') {
+        form <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
 
-      tabl <- xtabs(form, data = datuse)
-      # do a fisher test if the table is 2x2
-      if (all(dim(tabl) == c(2, 2))) {
-        res <- fisher.test(tabl)
-      } else {
-        res <- chisq.test(tabl)
+        tabl <- xtabs(form, data = datuse)
+        # do a fisher test if the table is 2x2
+        if (all(dim(tabl) == c(2, 2))) {
+          res <- fisher.test(tabl)
+        } else {
+          res <- chisq.test(tabl)
+        }
+
+      } else if (test_use == 'logistic_regress') {
+        tabl <- NULL
+        if (is.null(correct_var)) {
+          # TODO: NOTE: This is set to PREDICT each variable USING
+          # the group var. We probably are going to want to flip this for later projects.
+          # ALSO for this, need to make "variable/NOT-variable" as one column, not two.
+          # Avoid non-standard-eval dplyr stuff by just editing the second-to-last column.
+          # datuse[,ncol(datuse)-1] <- as.factor(ifelse(!is.na(datuse[,ncol(datuse)]),
+          #                                             yes=as.character(datuse[,ncol(datuse)]),
+          #                                             no=as.character(datuse[,ncol(datuse)-1])))
+          # wait, the 'new column' is already supposed to be in this format.
+
+          form <- as.formula(paste0('as.factor(', new_col, ')', "~", group_var))
+        } else {
+          form <- as.formula(paste0('as.factor(', new_col, ')', "~", group_var, "+", correct_var))
+        }
+
+        res <- glm(form, family='binomial', data=datuse)
+
       }
 
       chi_out[[var]] <- list(tbl = tabl, res = res)
