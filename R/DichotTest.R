@@ -11,6 +11,7 @@
 #' @param check_n_percents set to TRUE if wish to also obtain a count table with percentages. Defaults to FALSE.
 #' @param test_use specify either 'fisher' or 'logistic_regress'
 #' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
+#' @param great_eq set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE
 #' @export
 #' @examples
 #' # if have multiple observations per MRN, then can take the median per patient with rep_meas_sum_func="median"
@@ -26,7 +27,14 @@
 
 DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
                        rep_meas_sum_func="median", check_n_percents=FALSE,
-                       test_use='fisher', correct_var=NULL) {
+                       test_use='fisher', correct_var=NULL, great_eq=TRUE) {
+
+  if (great_eq) {
+    compare_sign <- ">="
+  } else {
+    compare_sign <- ">"
+  }
+
   tst_out <- list()
 
   if (check_n_percents==TRUE & is.null(id_var)) {
@@ -72,10 +80,10 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
     # other functions to run after the above.
     # If var == Admission_GCS, then split values where > 7
     if (var == "Admission_GCS") {
-      func_name4 <- paste0("if_else(", var, ">=", GCS_compare, ", true=1, false=0)")
+      func_name4 <- paste0("if_else(", var, compare_sign, GCS_compare, ", true=1, false=0)")
 
     } else {
-      func_name4 <- paste0("if_else(", var, ">=", new_col1, ", true=1, false=0)")
+      func_name4 <- paste0("if_else(", var, compare_sign, new_col1, ", true=1, false=0)")
     }
 
     new_col4 <- paste0("dichot_", var)
