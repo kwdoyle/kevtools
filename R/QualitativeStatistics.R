@@ -121,14 +121,14 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
       datuse <- data %>%
         ungroup() %>%
-        select_(.dots = c(id_var, group_var, var)) %>%
+        select_(.dots = c(id_var, group_var, var, correct_var)) %>%
         distinct() %>%
         # remove any rows where the var of interest is missing
         # to prevent xtabs from making a new column for missing values
         filter_(paste0("!is.na(", var, ")")) %>%
         # ok, so if a patient has multiple values per variable,
         # then I guess take the median value per patient?
-        group_by_(.dots = c(id_var, group_var)) %>%
+        group_by_(.dots = c(id_var, group_var, correct_var)) %>%
         #summarise_(med_var = median(var, na.rm=T))
         summarise_(.dots = setNames(func_name, new_col)) %>%
         # set as data frame so can pull columns as vectors below
