@@ -27,7 +27,8 @@
 
 DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
                        rep_meas_sum_func="median", check_n_percents=FALSE,
-                       test_use='fisher', correct_var=NULL, great_eq=TRUE) {
+                       test_use='fisher', correct_var=NULL, great_eq=TRUE,
+                       alt_split=NULL) {
 
   if (great_eq) {
     compare_sign <- ">="
@@ -79,8 +80,9 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
 
     # other functions to run after the above.
     # If var == Admission_GCS, then split values where > 7
-    if (var == "Admission_GCS") {
-      func_name4 <- paste0("if_else(", var, compare_sign, GCS_compare, ", true=1, false=0)")
+    # remove gcs exception and turn into own manual split.
+    if (!is.null(alt_split)) {
+      func_name4 <- paste0("if_else(", var, compare_sign, alt_split, ", true=1, false=0)")
 
     } else {
       func_name4 <- paste0("if_else(", var, compare_sign, new_col1, ", true=1, false=0)")
