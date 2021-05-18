@@ -13,7 +13,9 @@ DichotTest(
   rep_meas_sum_func = "median",
   check_n_percents = FALSE,
   test_use = "fisher",
-  correct_var = NULL
+  correct_var = NULL,
+  great_eq = TRUE,
+  alt_split = NULL
 )
 }
 \arguments{
@@ -34,6 +36,8 @@ DichotTest(
 \item{test_use}{specify either 'fisher' or 'logistic_regress'}
 
 \item{correct_var}{if performing a logistic regression, can specify an additional variable to correct for}
+
+\item{great_eq}{set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE}
 }
 \description{
 Dichotomize a variable by > or <= the median value and then perform Fisher's exact test on the resulting contingency table between a grouping variable.
