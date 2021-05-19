@@ -30,6 +30,7 @@ ConvertToTable <- function(obj) {
   }
 
   smry <- summary(fit)
+  # TODO if flip_dir is FALSE in qualitativestatistics, then this will pick the wrong name
   var_name <- as.character(fit$formula[2])
   # this always takes the second row of the output
   # what does it take with the multivariate?
@@ -37,7 +38,7 @@ ConvertToTable <- function(obj) {
                        ncol = length(smry$coefficients[2, ]), byrow = T),
                 silent = T)
 
-  if (class(params) != "try-error") {
+  if (!'try-error' %in% class(params)) {
     params <- matrix(c(params, c(confint(fit)[2, ])),
                      nrow = 1)
     colnames(params) <- c(colnames(smry$coefficients),

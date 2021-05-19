@@ -19,7 +19,7 @@
 #' print(out$Gender$M)
 #' print(out$Gender$F)
 
-# TODO flip_dir is NOT working.
+
 QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE,
                                   test_use='proportion', flip_dir = FALSE, correct_var=NULL) {
   library(dplyr)
@@ -40,7 +40,9 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
         # else assign a character ('notvar') if false.
         # always set to check the variable as a character.
         func_name <- paste0("case_when(as.character(", var, ") == '", sub_var, "' ~ as.character(", var, "), TRUE ~ 'not", sub_var, "')")
-        new_col <- paste0("not", sub_var) # should probably name this as: paste0("new", var).
+        # ...do I actually need it to say 'not X'..?
+        # new_col <- paste0("not", sub_var) # should probably name this as: paste0("new", var).
+        new_col <- paste0('var_', sub_var)
         # Eh, never mind. this unnecessarily breaks everything and it'll be a pain to fix.
 
         datuse <- data %>%
@@ -57,7 +59,9 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           mutate_(.dots = setNames(func_name, new_col))
 
         # I think the new column needs to be turned into a factor and always have the 'notX' level first
-        datuse[, new_col] <- factor(datuse[, new_col], levels = c(new_col, as.character(sub_var)))
+        # use the 'not X' here for the levels
+        # datuse[, new_col] <- factor(datuse[, new_col], levels = c(paste0('not', new_col), as.character(sub_var)))
+        datuse[, new_col] <- factor(datuse[, new_col], levels = c(paste0('not', sub_var), as.character(sub_var)))
         # ..or maybe using xtabs fixes this now? idk, it all currently works. no need to change anything..
 
         #tabl <- table(datuse[,group_var], datuse[,new_col]) #datuse[,var])
