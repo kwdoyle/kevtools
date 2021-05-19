@@ -4,13 +4,20 @@
 ConvertToTable <- function(obj) {
   output_table <- data.frame()
   # smry <- summary(fit)
-  fit <- obj$res
+  if ('glm' %in% class(obj) | 'lm' %in% class(obj)) {
+    fit <- obj
+  } else {
+    fit <- obj$res
+  }
+
   smry <- summary(fit)
   var_name <- as.character(fit$formula[2])
+  # this always takes the second row of the output
+  # what does it take with the multivariate?
   params <- try(matrix(smry$coefficients[2, ], nrow = 1,
                        ncol = length(smry$coefficients[2, ]), byrow = T),
                 silent = T)
-  
+
   if (class(params) != "try-error") {
     params <- matrix(c(params, c(confint(fit)[2, ])),
                      nrow = 1)
@@ -25,7 +32,7 @@ ConvertToTable <- function(obj) {
     rownames(params) <- effect
     output_table <- rbind(output_table, as.data.frame(params))
   }
-  
+
   return(output_table)
 }
 
