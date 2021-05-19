@@ -9,6 +9,7 @@
 #' @param multilevel if TRUE, then function will perform analyses on all values with a variable between the group
 #' @param test_use specify either 'proportion' or 'logistic_regress' Note: logistic regression is only done if multilevel == TRUE
 #' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
+#' @param flip_dir short for 'flip directionality.' set to true if want to predict the variable *using* the outcome instead
 #' @export
 #' @examples
 #' out <- QualitativeStatistics(data, group_var = "CMD", tst_vars = c("Gender", "Etiology", "Race"), multilevel = TRUE)
@@ -18,8 +19,9 @@
 #' print(out$Gender$M)
 #' print(out$Gender$F)
 
+# TODO flip_dir is NOT working.
 QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE,
-                                  test_use='proportion', correct_var=NULL) {
+                                  test_use='proportion', flip_dir = FALSE, correct_var=NULL) {
   library(dplyr)
   chi_out <- list()
   # make sure data is not a tibble so that some of the below opperations work
@@ -84,9 +86,19 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
             #                                             no=as.character(datuse[,ncol(datuse)-1])))
             # wait, the 'new column' is already supposed to be in this format.
 
-            form <- as.formula(paste0(new_col, "~", group_var))
+            # This should fix the above snafu.
+            if (flip_dir) {
+              dep_var <- new_col
+              indep_var <- group_var
+            } else {
+              dep_var <- group_var
+              indep_var <- new_col
+            }
+
+
+            form <- as.formula(paste0(dep_var, "~", indep_var))
           } else {
-            form <- as.formula(paste0(new_col, "~", group_var, "+", correct_var))
+            form <- as.formula(paste0(dep_var, "~", indep_var, "+", correct_var))
           }
 
           res <- glm(form, family='binomial', data=datuse)
@@ -160,9 +172,18 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           #                                             no=as.character(datuse[,ncol(datuse)-1])))
           # wait, the 'new column' is already supposed to be in this format.
 
-          form <- as.formula(paste0('as.factor(', new_col, ')', "~", group_var))
+          # This should fix the above snafu.
+          if (flip_dir) {
+            dep_var <- new_col
+            indep_var <- group_var
+          } else {
+            dep_var <- group_var
+            indep_var <- new_col
+          }
+
+          form <- as.formula(paste0('as.factor(', dep_var, ')', "~", indep_var))
         } else {
-          form <- as.formula(paste0('as.factor(', new_col, ')', "~", group_var, "+", correct_var))
+          form <- as.formula(paste0('as.factor(', dep_var, ')', "~", indep_var, "+", correct_var))
         }
 
         res <- glm(form, family='binomial', data=datuse)
