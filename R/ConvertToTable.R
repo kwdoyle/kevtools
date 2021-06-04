@@ -23,7 +23,12 @@
 ConvertToTable <- function(obj, flip_dir=FALSE) {
   output_table <- data.frame()
   # smry <- summary(fit)
-  fit <- obj$res
+  if ('glm' %in% class(obj) | 'lm' %in% class(obj)) {
+    fit <- obj
+  } else {
+    fit <- obj$res
+  }
+
   smry <- summary(fit)
   if (flip_dir) {
     var_name <- as.character(fit$formula[2])
@@ -35,7 +40,7 @@ ConvertToTable <- function(obj, flip_dir=FALSE) {
                        ncol = length(smry$coefficients[2, ]), byrow = T),
                 silent = T)
 
-  if (class(params) != "try-error") {
+  if (!'try-error' %in% class(params)) {
     params <- matrix(c(params, c(confint(fit)[2, ])),
                      nrow = 1)
     colnames(params) <- c(colnames(smry$coefficients),
