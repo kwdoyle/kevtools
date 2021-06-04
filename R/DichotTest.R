@@ -6,12 +6,14 @@
 #' @param id_var The identifying variable per observation (e.g., patient number). Defaults to NULL
 #' @param group_var the variable to group by
 #' @param tst_vars a vector of variables to dichotomize by their median and test
-#' @param GCS_compare if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7
+#' @param GCS_compare if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7. This is depreciated; use "alt_split' instead
 #' @param rep_meas_sum_func If wind up having multiple observations per id_var, this is the function to summarise the tst_vars per id_var by. Defaults to "median"
 #' @param check_n_percents set to TRUE if wish to also obtain a count table with percentages. Defaults to FALSE.
 #' @param test_use specify either 'fisher' or 'logistic_regress'
 #' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
-#' @param great_eq set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE
+#' @param include_eq set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE
+#' @param compare_less_than set to TRUE if want to compare by < or <= the split value instead of the default of > or >=
+#' @param alt_split can set an alternate value to dichotomize by instead of the median
 #' @export
 #' @examples
 #' # if have multiple observations per MRN, then can take the median per patient with rep_meas_sum_func="median"
@@ -27,13 +29,19 @@
 
 DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
                        rep_meas_sum_func="median", check_n_percents=FALSE,
-                       test_use='fisher', correct_var=NULL, great_eq=TRUE,
-                       alt_split=NULL) {
+                       test_use='fisher', correct_var=NULL, include_eq=TRUE,
+                       compare_less_than=FALSE, alt_split=NULL) {
 
-  if (great_eq) {
+  if (include_eq) {
     compare_sign <- ">="
+    if (compare_less_than) {
+      compare_sign <- "<="
+    }
   } else {
     compare_sign <- ">"
+    if (compare_less_than) {
+      compare_sign <- "<"
+    }
   }
 
   tst_out <- list()
@@ -118,7 +126,9 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
       res <- fisher.test(tbl)
 
     } else if (test_use == 'logistic_regress') {
-      tbl <- NULL
+      tabform <- as.formula(paste0("~", group_var, "+", new_col4))
+      tbl <- xtabs(tabform, data=newdata)
+
       if (is.null(correct_var)) {
         # TODO: NOTE: This is set to PREDICT each variable USING
         # the group var. We probably are going to want to flip this for later projects.

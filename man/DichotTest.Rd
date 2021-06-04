@@ -14,7 +14,8 @@ DichotTest(
   check_n_percents = FALSE,
   test_use = "fisher",
   correct_var = NULL,
-  great_eq = TRUE,
+  include_eq = TRUE,
+  compare_less_than = FALSE,
   alt_split = NULL
 )
 }
@@ -27,7 +28,7 @@ DichotTest(
 
 \item{tst_vars}{a vector of variables to dichotomize by their median and test}
 
-\item{GCS_compare}{if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7}
+\item{GCS_compare}{if parameter happens to be the Glasgow Coma Scale, then dichotomize by > 7 since that's apparently already an agreed upon split in the literature. Defaults to 7. This is depreciated; use "alt_split' instead}
 
 \item{rep_meas_sum_func}{If wind up having multiple observations per id_var, this is the function to summarise the tst_vars per id_var by. Defaults to "median"}
 
@@ -37,7 +38,11 @@ DichotTest(
 
 \item{correct_var}{if performing a logistic regression, can specify an additional variable to correct for}
 
-\item{great_eq}{set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE}
+\item{include_eq}{set to FALSE if want to dichotomize by > the median and not >=. Defaults to TRUE}
+
+\item{compare_less_than}{set to TRUE if want to compare by < or <= the split value instead of the default of > or >=}
+
+\item{alt_split}{can set an alternate value to dichotomize by instead of the median}
 }
 \description{
 Dichotomize a variable by > or <= the median value and then perform Fisher's exact test on the resulting contingency table between a grouping variable.

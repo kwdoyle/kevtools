@@ -4,7 +4,7 @@
 \alias{ConvertToTable}
 \title{Convert list-form model outputs into a table}
 \usage{
-ConvertToTable(obj)
+ConvertToTable(obj, flip_dir = FALSE)
 }
 \arguments{
 \item{obj}{any list-output from one of the many functions in this package that generates model outputs}

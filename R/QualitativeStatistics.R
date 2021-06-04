@@ -19,7 +19,6 @@
 #' print(out$Gender$M)
 #' print(out$Gender$F)
 
-# TODO flip_dir is NOT working.
 QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE,
                                   test_use='proportion', flip_dir = FALSE, correct_var=NULL) {
   library(dplyr)
@@ -75,7 +74,10 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           }
 
         } else if (test_use == 'logistic_regress') {
-          tabl <- NULL
+          tabform <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
+
+          tabl <- xtabs(tabform, data = datuse)
+
           if (is.null(correct_var)) {
             # TODO: NOTE: This is set to PREDICT each variable USING
             # the group var. We probably are going to want to flip this for later projects.
@@ -161,7 +163,10 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
         }
 
       } else if (test_use == 'logistic_regress') {
-        tabl <- NULL
+        tabform <- as.formula(paste0("~", group_var, "+ `", new_col, "`"))
+
+        tabl <- xtabs(tabform, data = datuse)
+
         if (is.null(correct_var)) {
           # TODO: NOTE: This is set to PREDICT each variable USING
           # the group var. We probably are going to want to flip this for later projects.

@@ -20,12 +20,17 @@
 #'   return(x)
 #' })
 
-ConvertToTable <- function(obj) {
+ConvertToTable <- function(obj, flip_dir=FALSE) {
   output_table <- data.frame()
   # smry <- summary(fit)
   fit <- obj$res
   smry <- summary(fit)
-  var_name <- as.character(fit$formula[2])
+  if (flip_dir) {
+    var_name <- as.character(fit$formula[2])
+  } else {
+    var_name <- as.character(fit$formula[3])
+  }
+
   params <- try(matrix(smry$coefficients[2, ], nrow = 1,
                        ncol = length(smry$coefficients[2, ]), byrow = T),
                 silent = T)
