@@ -107,7 +107,8 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
             form <- as.formula(paste0(dep_var, "~", indep_var, "+", correct_var))
           }
 
-          res <- glm(form, family='binomial', data=datuse)
+          # res <- glm(form, family='binomial', data=datuse)
+          res <- eval(bquote( glm(.(form), family='binomial', data=datuse) ))
 
         }
 
@@ -195,7 +196,9 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
           form <- as.formula(paste0('as.factor(', dep_var, ')', "~", indep_var, "+", correct_var))
         }
 
-        res <- glm(form, family='binomial', data=datuse)
+        # res <- glm(form, family='binomial', data=datuse)
+        # use this instead to keep actual formula in summary
+        res <- eval(bquote( glm(.(form), family='binomial', data=datuse) ))
 
       }
 

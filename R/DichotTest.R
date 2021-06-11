@@ -137,7 +137,10 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
         form <- as.formula(paste0(new_col4, "~", group_var, "+", correct_var))
       }
 
-      res <- glm(form, family='binomial', data=newdata)
+      # res <- glm(form, family='binomial', data=newdata)
+      # use this instead to keep actual formula in summary
+      # model <- eval(bquote( lm(.(f), data=mtcars) ))
+      res <- eval(bquote( glm(.(form), family='binomial', data=newdata) ))
 
     } else {
       stop("'test_use' must either be 'fisher' or 'logistic_regress")
