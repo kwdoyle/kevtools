@@ -14,7 +14,11 @@
 UnivariateRegress <- function (table, depen_vars, indep_vars, mod_type="glm", rand_effect=NULL) {
   output_table <- data.frame()
   dep <- paste(depen_vars)
-  response <- paste("cbind(", dep, ") ~ ", sep = "")
+  # I am not 100% sure why cbind is used here. I think it had something to do with using multiple dependent vars..?
+  # but anyway, if the variable going in is a factor, cbind will convert it to numeric and I *think* always give
+  # levels of 1 and 2, which glm errors with.
+  # So I guess just subtract 1 from them?? This will probably break in some other use-case.
+  response <- paste("cbind(as.factor(", dep, ")) - 1 ~ ", sep = "")
   for (i in 1:length(indep_vars)) {
 
 
