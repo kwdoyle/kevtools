@@ -29,30 +29,48 @@ ConvertToTable <- function(obj, flip_dir=FALSE) {
     fit <- obj$res
   }
 
-  smry <- summary(fit)
-  if (flip_dir) {
-    var_name <- as.character(fit$formula[2])
-  } else {
-    var_name <- as.character(fit$formula[3])
-  }
+  if ('htest' %in% class(fit)) {
+    if (flip_dir) {
+      var_name <- names(dimnames(obj$tbl))[1]
+    } else {
+      var_name <- names(dimnames(obj$tbl))[2]
+    }
 
-  params <- try(matrix(smry$coefficients[2, ], nrow = 1,
-                       ncol = length(smry$coefficients[2, ]), byrow = T),
-                silent = T)
-
-  if (!'try-error' %in% class(params)) {
-    params <- matrix(c(params, c(confint(fit)[2, ])),
-                     nrow = 1)
-    colnames(params) <- c(colnames(smry$coefficients),
-                          paste("CI", colnames(confint(fit))))
+    params <- data.frame(OR=unname(fit$estimate), `CI 2.5`=fit$conf.int[1], `CI 95`=fit$conf.int[2],
+                         P=fit$p.value)
     rownames(params) <- var_name
-    output_table <- rbind(output_table, as.data.frame(params))
-  } else {
-    params <- matrix(c(rep(NA, length(output_table))),
-                     nrow = 1)
-    colnames(params) <- colnames(output_table)
-    rownames(params) <- effect
-    output_table <- rbind(output_table, as.data.frame(params))
+
+    output_table <- rbind(output_table, params)
+
+
+  } else if ('glm' %in% class(fit) | 'lm' %in% class(fit)) {
+
+    smry <- summary(fit)
+    if (flip_dir) {
+      var_name <- as.character(fit$formula[2])
+    } else {
+      var_name <- as.character(fit$formula[3])
+    }
+
+    params <- try(matrix(smry$coefficients[2, ], nrow = 1,
+                         ncol = length(smry$coefficients[2, ]), byrow = T),
+                  silent = T)
+
+    if (!'try-error' %in% class(params)) {
+      params <- matrix(c(params, c(confint(fit)[2, ])),
+                       nrow = 1)
+      colnames(params) <- c(colnames(smry$coefficients),
+                            paste("CI", colnames(confint(fit))))
+      rownames(params) <- var_name
+      output_table <- rbind(output_table, as.data.frame(params))
+    } else {
+      params <- matrix(c(rep(NA, length(output_table))),
+                       nrow = 1)
+      colnames(params) <- colnames(output_table)
+      rownames(params) <- effect
+      output_table <- rbind(output_table, as.data.frame(params))
+    }
+
   }
 
   return(output_table)
