@@ -29,7 +29,7 @@
 
 DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
                        rep_meas_sum_func="median", check_n_percents=FALSE,
-                       test_use='fisher', correct_var=NULL, include_eq=TRUE,
+                       test_use='proportion', yates=TRUE, correct_var=NULL, include_eq=TRUE,
                        compare_less_than=FALSE, alt_split=NULL) {
 
   if (include_eq) {
@@ -117,13 +117,21 @@ DichotTest <- function(data, id_var=NULL, group_var, tst_vars, GCS_compare=7,
 
 
     # Allow for logistic regression or fisher
-    if (test_use == 'fisher') {
+    if (test_use == 'proportion') {
       # can use xtabs to make the contingency table
       form <- as.formula(paste0("~", group_var, "+", new_col4))
 
       tbl <- xtabs(form, data=newdata)
       # then do fisher test
-      res <- fisher.test(tbl)
+      # res <- fisher.test(tbl)
+      tmpres <- chisq.test(tbl)
+      chkres <- tmpres$expected < 5
+
+      if (any(chkres)) {
+        res <- fisher.test(tbl)
+      } else {
+        res <- chisq.test(tbl, correct=yates)
+      }
 
     } else if (test_use == 'logistic_regress') {
       tabform <- as.formula(paste0("~", group_var, "+", new_col4))

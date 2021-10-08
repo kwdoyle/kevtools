@@ -8,6 +8,7 @@
 #' @param tst_vars variables to perform the test on; can be passed as a vector of strings
 #' @param multilevel if TRUE, then function will perform analyses on all values with a variable between the group
 #' @param test_use specify either 'proportion' or 'logistic_regress' Note: logistic regression is only done if multilevel == TRUE
+#' @param yates whether to use yate's continuity correction or not. chisq.test defaults to TRUE, while gtsummary's add_p defaults to FALSE
 #' @param correct_var if performing a logistic regression, can specify an additional variable to correct for
 #' @param flip_dir short for 'flip directionality.' set to true if want to predict the variable *using* the outcome instead
 #' @export
@@ -20,7 +21,7 @@
 #' print(out$Gender$F)
 
 QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel = FALSE,
-                                  test_use='proportion', flip_dir = FALSE, correct_var=NULL) {
+                                  test_use='proportion', yates = TRUE, flip_dir = FALSE, correct_var=NULL) {
   library(dplyr)
   chi_out <- list()
   # make sure data is not a tibble so that some of the below opperations work
@@ -71,10 +72,15 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
           tabl <- xtabs(form, data = datuse)
           # do a fisher test if the table is 2x2
-          if (all(dim(tabl) == c(2,2))) {
+          # UPDATE as of 2021-10-08: Change the check of whether to use fisher to be
+          # if any of the expected cell counts is < 5 (to match what gtsummary uses)
+          tmpres <- chisq.test(tabl)
+          chkres <- tmpres$expected < 5
+          # if (all(dim(tabl) == c(2,2))) {
+          if (any(chkres)) {
             res <- fisher.test(tabl)
           } else {
-            res <- chisq.test(tabl)
+            res <- chisq.test(tabl, correct=yates)
           }
 
         } else if (test_use == 'logistic_regress') {
@@ -114,9 +120,12 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
 
         # make sure the name of the new list element is a character. using numbers can cause problems
-        sub_chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = res)
+        # sub_chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = res)
+        #
+        # chi_out[[var]] <- sub_chi_out
 
-        chi_out[[var]] <- sub_chi_out
+        # ...what if I just put the sub_var as the main name instead of having two levels of names.
+        chi_out[[as.character(sub_var)]] <- list(tbl = tabl, res = res)
 
       }
 
@@ -161,10 +170,15 @@ QualitativeStatistics <- function(data, id_var, group_var, tst_vars, multilevel 
 
         tabl <- xtabs(form, data = datuse)
         # do a fisher test if the table is 2x2
-        if (all(dim(tabl) == c(2, 2))) {
+        # UPDATE as of 2021-10-08: Change the check of whether to use fisher to be
+        # if any of the expected cell counts is < 5 (to match what gtsummary uses)
+        tmpres <- chisq.test(tabl)
+        chkres <- tmpres$expected < 5
+        # if (all(dim(tabl) == c(2,2))) {
+        if (any(chkres)) {
           res <- fisher.test(tabl)
         } else {
-          res <- chisq.test(tabl)
+          res <- chisq.test(tabl, correct=yates)
         }
 
       } else if (test_use == 'logistic_regress') {
