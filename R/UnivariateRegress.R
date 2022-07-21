@@ -37,7 +37,7 @@ UnivariateRegress <- function (table, depen_vars, indep_vars, mod_type="glm", ra
       params <- try(matrix(smry$coefficients[2, ], nrow = 1,
                            ncol = length(smry$coefficients[2, ]), byrow = T),
                     silent = T)
-      if (class(params) != "try-error") {
+      if (all(class(params) != "try-error")) {
         params <- matrix(c(params, c(confint(fit)[2, ])),
                          nrow = 1)
         colnames(params) <- c(colnames(smry$coefficients),
@@ -72,10 +72,10 @@ UnivariateRegress <- function (table, depen_vars, indep_vars, mod_type="glm", ra
                            ncol = length(smry$coefficients[2, ]), byrow = T),
                     silent = T)
       # here's some crazy fix for if the confint calc fails.
-      if (class(params) != "try-error") {
+      if (all(class(params) != "try-error")) {
         oth_params <- try(c(confint.merMod(fit)[2, ]), silent=T)
 
-        if (class(oth_params) == "try-error") {
+        if (any(class(oth_params) == "try-error")) {
           oth_params <- c(NA, NA)
           params <- matrix(c(params, oth_params), nrow = 1)
 
