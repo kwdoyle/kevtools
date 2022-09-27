@@ -6,6 +6,10 @@
 
 
 createTimeCol <- function(x) {
+  cleanDate <- function(x, badstr) {
+    ifelse(x == badstr, NA, x)
+  }
+
   if (any(names(x) == "eeg_date")) {
     # create new test_datetime
     rcfgtimes <- x$eeg_time
@@ -13,9 +17,10 @@ createTimeCol <- function(x) {
     # just turn the NAs to 00:00s
     rcfgtdatetimes2 <- gsub("NA", "00:00", rcfgtdatetimes)
     # this is from turning the double blank "NA" strings pasted together that both were converted to 00:00s
-    # rcfgdatetimes3 <- as.POSIXct(cleanDate(rcfgtdatetimes2, badstr="00:00 00:00"))
+    rcfgdatetimes3 <- as.POSIXct(cleanDate(rcfgtdatetimes2, badstr="00:00 00:00"))
     # should be able to use the actual internals of the cleanDate function instead
-    rcfgdatetimes3 <- as.POSIXct(ifelse(x == "00:00 00:00", NA, x))
+    # ....or not.
+    # rcfgdatetimes3 <- as.POSIXct(ifelse(x == "00:00 00:00", NA, x))
 
     x$test_datetime <- rcfgdatetimes3
   } else if (any(names(x) == "test_datetime")) {
