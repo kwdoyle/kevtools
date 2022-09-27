@@ -11,6 +11,7 @@ QualitativeStatistics(
   tst_vars,
   multilevel = FALSE,
   test_use = "proportion",
+  yates = TRUE,
   flip_dir = FALSE,
   correct_var = NULL
 )
@@ -27,6 +28,8 @@ QualitativeStatistics(
 \item{multilevel}{if TRUE, then function will perform analyses on all values with a variable between the group}
 
 \item{test_use}{specify either 'proportion' or 'logistic_regress' Note: logistic regression is only done if multilevel == TRUE}
+
+\item{yates}{whether to use yate's continuity correction or not. chisq.test defaults to TRUE, while gtsummary's add_p defaults to FALSE}
 
 \item{flip_dir}{short for 'flip directionality.' set to true if want to predict the variable *using* the outcome instead}
 
