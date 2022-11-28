@@ -6,6 +6,11 @@
 
 
 loadRedcap <- function(path, rcids) {
+  library(stringr)
+  library(readxl)
+  library(gtools)
+  library(sjlabelled)
+
   if (class(path) != "character" & class(rcids) != "list") {
     stop("Must provide vector of paths to redcap data folders and a list of their recdap ID files in order")
   }
@@ -24,9 +29,9 @@ loadRedcap <- function(path, rcids) {
   out <- list()
   for (i in 1:length(path)) {
     env <- new.env()
-    sourceEnv(path=path[i], env=env)
+    kevtools::sourceEnv(path=path[i], env=env)
     data <- env$data
-    data2 <- sjlabelled::remove_all_labels(kevtools::processREDCapData(data))
+    data2 <- remove_all_labels(kevtools::processREDCapData(data))
     # remove specific bad characters from the ids
     if (any(grepl("A-", rcid_lst[[i]]$record_id))) {
       rcid_lst[[i]]$record_id <- gsub("A-", "", rcid_lst[[i]]$record_id)
@@ -48,11 +53,11 @@ loadRedcap <- function(path, rcids) {
   chk3 <- sapply(out, function(x) any(names(x) == "eeg_datetime"))
 
   if (any(chk1) | any(chk2) | any(chk3)) {
-    out <- lapply(out, createTimeCol)
+    out <- lapply(out, kevtools::createTimeCol)
   }
 
   # this just converts the test date back to character.
-  data3 <- gtools::smartbind(list=out)
+  data3 <- smartbind(list=out)
   # final clean of mrns/IDs
   data3$mrn <- ifelse(is.na(data3$mrn), data3$record_id, data3$mrn)
 
