@@ -15,6 +15,10 @@ loadRedcap <- function(path, rcids) {
     stop("Must provide vector of paths to redcap data folders and a list of their recdap ID files in order")
   }
 
+  if (length(path) != length(rcids)) {
+    stop("'path' and 'rcids' must be same length")
+  }
+
   rcid_lst <- list()
   for (i in 1:length(rcids)) {
     rcidtmp <- read_xlsx(rcids[i])
